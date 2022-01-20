@@ -1,11 +1,31 @@
-def make_board(a)
-  top_row = " #{a} | #{a} | #{a} "
-  mid_row = " #{a} | #{a} | #{a} "
-  bot_row = " #{a} | #{a} | #{a} "
-  spacer_row = '---+---+---'
-  puts top_row
-  puts spacer_row
-  puts mid_row
-  puts spacer_row
-  puts bot_row
+
+class NewGame
+  def initialize
+    @board = Board.new
+  end
+end
+
+
+class Board
+  attr_accessor :row_1, :row_2, :row_3
+  ROW_DIVIDER = '--+---+--'
+  def initialize
+    @row_1 = [1, 2, 3]
+    @row_2 = [4, 5, 6]
+    @row_3 = [7, 8, 9]
+  end
+  def print_board
+    puts row_1.join(' | ')
+    puts ROW_DIVIDER
+    puts @row_2.join(' | ')
+    puts ROW_DIVIDER
+    puts @row_3.join(' | ')
+  end
+end
+
+
+class Player
+  def initialize(name)
+    @name = name
+  end
 end
