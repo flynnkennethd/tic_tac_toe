@@ -1,10 +1,28 @@
+module Messages
+  def invalid_input
+    "Invalid input, please try again."
+  end
+  def create_player_prompt(player_number)
+    "Please enter the name to be used for player ##{player_number}."
+  end
+
+  def turn_prompt(player)
+    "Please enter the tile number you'd like to take, #{player.name}."
+  end
+
+  def win_message(winner)
+    "Congratulations, #{winner.name}, you've won the game!"
+  end
+  def tie_message
+    "It's a tie!"
+end
 
 class Game
   include Messages
-  attr_reader :player_1, :player_2
+  attr_reader :player_1, :player_2, :board, :is_player_1_turn
   def initialize
-    @board = Board.New
-    @is_player_1_turn? = true
+    @board = Board.new
+    @is_player_1_turn = true
   end
 
   def create_players
@@ -17,31 +35,33 @@ class Game
   end
 
   def change_turn
-    @is_player_1_turn? = !@is_player_1_turn?
+    @is_player_1_turn = !@is_player_1_turn
   end
 
-  def take_turn(is_player_1_turn?)
-    current_player = is_player_1_turn? ? player_1 : player_2
-    puts turn_prompt
-    tile_choice = gets.chomp.to_int
+  def take_turn(is_player_1_turn)
+    current_player = is_player_1_turn ? self.player_1 : self.player_2
+    puts turn_prompt(current_player)
+    tile_choice = Integer(gets) rescue nil
     if tile_choice.class != Integer
       puts invalid_input
-      take_turn
-    elsif !@board.valid_move?(tile_choice)
+      take_turn(self.is_player_1_turn)
+    elsif !self.board.valid_move?(tile_choice)
       puts invalid_input
-      take_turn
+      take_turn(self.is_player_1_turn)
     else
-      @board.update_board(tile_choice, current_player.symbol)
-      current_player.owned_tiles += tile_choice
+      self.board.update_board(tile_choice, current_player.symbol)
+      current_player.owned_tiles.append(tile_choice)
+      board.print_board
+      board.check_win(self)
+      change_turn
     end
-    board.print_board
-    board.check_win
-    change_turn
   end
-  def end_game(winner)
-    puts win_message(winner.name)
+  def end_game(winner = nil)
+    puts win_message(winner.name) if winner
+    puts tie_message unless winner
   end
 end
+
 
 class Board
   attr_accessor :tiles
@@ -70,19 +90,20 @@ class Board
   def valid_move?(tile)
     tiles[tile].is_a? Integer
   end
-  def check_win
-    WINNING_LINES.each do |line|
-      (game.player_1.owned_tiles - line).empty?
+  def check_win(game)
+    if WINNING_LINES.any? {|line| (line - game.player_1.owned_tiles).empty?}
+      winner = game.player_1
+      game.end_game(winner)
     end
-    WINNING_LINES.each do |line|
-      (game.player_2.owned_tiles - line).empty?
-    end
-    game.end_game(winner)
+    if WINNING_LINES.any? {|line| (line - game.player_2.owned_tiles).empty?}
+      winner = game.player_2
+      game.end_game(winner)
+  end
 end
 
 
 class Player
-  attr_reader :symbol
+  attr_reader :symbol, :name, :player_num
   attr_accessor :owned_tiles
 
   def initialize(name, symbol)
@@ -90,5 +111,4 @@ class Player
     @symbol = symbol
     @owned_tiles = []
   end
-
 end
