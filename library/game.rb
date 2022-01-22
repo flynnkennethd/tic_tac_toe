@@ -58,8 +58,6 @@ class Game
     end
     self.game_ongoing = false
   end
-
-  private
   
   def play_again
     puts play_again_message
