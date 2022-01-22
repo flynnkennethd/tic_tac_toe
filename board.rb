@@ -29,10 +29,11 @@ class Board
     if WINNING_LINES.any? {|line| (line - game.player_1.owned_tiles).empty?}
       winner = game.player_1
       game.end_game(winner)
-    end
-    if WINNING_LINES.any? {|line| (line - game.player_2.owned_tiles).empty?}
+    elsif WINNING_LINES.any? {|line| (line - game.player_2.owned_tiles).empty?}
       winner = game.player_2
       game.end_game(winner)
+    elsif (game.player_1.owned_tiles.length + game.player_2.owned_tiles.length == 9) 
+      game.end_game
     end
   end
 end

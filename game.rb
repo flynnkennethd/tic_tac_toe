@@ -1,9 +1,21 @@
 class Game
   include Messages
   attr_reader :player_1, :player_2, :board, :is_player_1_turn
+  attr_accessor :game_ongoing
   def initialize
     @board = Board.new
     @is_player_1_turn = true
+    @game_ongoing = true
+  end
+  def play_game
+    puts welcome_message
+    puts ''
+    create_players
+    self.board.print_board
+    while self.game_ongoing == true
+      take_turn(self.is_player_1_turn)
+    end
+    self.play_again
   end
 
   def create_players
@@ -37,8 +49,29 @@ class Game
       change_turn
     end
   end
+
   def end_game(winner = nil)
-    puts win_message(winner) if winner
-    puts tie_message unless winner
+    if winner
+      puts win_message(winner)
+    else
+      puts tie_message
+    end
+    self.game_ongoing = false
+  end
+
+  private
+  
+  def play_again
+    puts play_again_message
+    case (gets.chomp.downcase)
+    when 'y'
+      game = Game.new
+      game.play_game
+    when 'n'
+      puts 'Thank you for playing!'
+    else
+      puts invalid_input
+      play_again
+    end
   end
 end

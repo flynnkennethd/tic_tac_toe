@@ -1,4 +1,7 @@
 module Messages
+  def welcome_message
+    "Welcome! This is a Tic-Tac-Toe program written by Kenneth Flynn. Please Enjoy!"
+  end
   def invalid_input
     "Invalid input, please try again."
   end
@@ -15,5 +18,8 @@ module Messages
   end
   def tie_message
     "It's a tie!"
+  end
+  def play_again_message
+    "Would you like to play again? Enter Y for yes or N for no"
   end
 end
